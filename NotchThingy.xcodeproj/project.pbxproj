@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		61A86CBF2DBBED7100A5317B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 61A86CBE2DBBED7100A5317B /* Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		61A86C992DBBE76D00A5317B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +31,25 @@
 		61A86C8A2DBBE76B00A5317B /* NotchThingy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotchThingy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61A86C982DBBE76D00A5317B /* NotchThingyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotchThingyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		61A86CA22DBBE76D00A5317B /* NotchThingyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotchThingyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		61A86CBE2DBBED7100A5317B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		61A86CC12DBBF02800A5317B /* Exceptions for "NotchThingy" folder in "NotchThingy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 61A86C892DBBE76B00A5317B /* NotchThingy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		61A86C8C2DBBE76B00A5317B /* NotchThingy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				61A86CC12DBBF02800A5317B /* Exceptions for "NotchThingy" folder in "NotchThingy" target */,
+			);
 			path = NotchThingy;
 			sourceTree = "<group>";
 		};
@@ -75,6 +93,7 @@
 		61A86C812DBBE76B00A5317B = {
 			isa = PBXGroup;
 			children = (
+				61A86CBE2DBBED7100A5317B /* Info.plist */,
 				61A86C8C2DBBE76B00A5317B /* NotchThingy */,
 				61A86C9B2DBBE76D00A5317B /* NotchThingyTests */,
 				61A86CA52DBBE76D00A5317B /* NotchThingyUITests */,
@@ -212,6 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61A86CBF2DBBED7100A5317B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,7 +422,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotchThingy/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "This app shows your Reminders at the notch.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -429,7 +451,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotchThingy/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "This app shows your Reminders at the notch.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
