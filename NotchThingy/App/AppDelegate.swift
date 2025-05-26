@@ -9,32 +9,85 @@ import SwiftUI
 import AppKit // For NSApplicationDelegate, NSWindow, NSHostingView
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    private var floatingWindow: FloatingWindow? // Keep a reference
+    private var floatingWindow: FloatingWindow?
+
+    // Define target sizes for different views
+    // Define target sizes for different views
+    private let initialHookSize = NSSize(width: InitialHookView.hookWidth, height: InitialHookView.hookHeight)
+    private let menuSize = NSSize(width: FloatingWindow.defaultMenuWidth, height: FloatingWindow.defaultMenuHeight)
+    private let remindersSize = NSSize(width: 300, height: 120) // Adjusted for Reminders list
+    private let mirrorSize = NSSize(width: 300, height: 120)    // Example for Mirror view
+    
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // 1. Create an instance of our custom FloatingWindow
-        floatingWindow = FloatingWindow()
+        // Create window with menu size initially
+        floatingWindow = FloatingWindow(initialSize: menuSize)
+        
+        showInitialHook()
 
-        // 2. Create the SwiftUI view that will be the content
-        let contentView = NotchContentView() // Your simple SwiftUI view
+        floatingWindow?.makeKeyAndOrderFront(nil)
+        floatingWindow?.orderFrontRegardless()
+    }
 
-        // 3. Host the SwiftUI view within an NSHostingView
-        let hostingView = NSHostingView(rootView: contentView)
-        floatingWindow?.contentView = hostingView // Set it as the window's content
+    private func setWindowContent<V: View>(to view: V, newSize: NSSize, yOffsetForPositioning: CGFloat? = 20) {
+        guard let window = floatingWindow else { return }
+        
+        let rootView = view
+            .frame(width: newSize.width, height: newSize.height)
 
-        // 4. Make the window visible
-        floatingWindow?.makeKeyAndOrderFront(nil) // Brings it to the front and makes it key
-        floatingWindow?.orderFrontRegardless()    // Ensures it's visible even if app isn't active
+        let hostingView = NSHostingView(rootView: rootView)
+        hostingView.frame.size = newSize
+      
+        window.contentView = hostingView
+      
+        let currentOrigin = window.frame.origin // Keep current origin X as a base for centering
+        let newFrame = NSRect(origin: CGPoint(x: currentOrigin.x, y: window.frame.origin.y - (newSize.height - window.frame.height)),
+                             size: newSize)
+      
+        window.setFrame(newFrame, display: true, animate: true, andPositionNearNotchYOffset: yOffsetForPositioning)
+    }
+    
+    private func showInitialHook() {
+        let hookView = InitialHookView { [weak self] in
+            self?.showMainMenuView()
+        }
+        // Initial hook is tight to the notch
+        setWindowContent(to: hookView, newSize: initialHookSize, yOffsetForPositioning: 0)
+    }
 
-        // Optional: Hide the Dock icon if you want it to be a utility-style app
-        // Add <key>LSUIElement</key><true/> to Info.plist for this.
-        // Or: NSApp.setActivationPolicy(.accessory) // Call this before window is shown
+    private func showMainMenuView() {
+        let menuView = MainMenuView { [weak self] selection in
+            self?.handleMenuSelection(selection)
+        }
+        // Menu typically a bit lower than the notch
+        setWindowContent(to: menuView, newSize: menuSize, yOffsetForPositioning: 20)
+    }
+
+    private func handleMenuSelection(_ selection: MenuSelection) {
+        switch selection {
+        case .reminders:
+            showRemindersView()
+        case .mirror:
+            showMirrorView()
+        }
+    }
+
+    private func showRemindersView() {
+        let remindersContentView = ReminderView()
+        setWindowContent(to: remindersContentView, newSize: remindersSize, yOffsetForPositioning: 20)
+    }
+
+    private func showMirrorView() {
+        let mirrorContentView = MirrorView { [weak self] in
+            self?.showMainMenuView() // Action for the "Back to Menu" button
+        }
+        // Mirror view might be larger and also offset from notch
+        setWindowContent(to: mirrorContentView, newSize: mirrorSize, yOffsetForPositioning: 20)
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        // If the Dock icon is clicked (and visible) and window was closed, show it again.
         if !flag {
-            floatingWindow?.makeKeyAndOrderFront(nil)
+            floatingWindow?.makeKeyAndOrderFront(nil) // Or decide to always showMainMenuView()
         }
         return true
     }

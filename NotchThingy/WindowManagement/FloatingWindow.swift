@@ -3,8 +3,12 @@ import AppKit
 import SwiftUI // For NSSize, CGPoint, NSRect
 
 class FloatingWindow: NSWindow {
-    init() {
-        // Determine screen dimensions
+    // Default initial size, suitable for a menu or a compact view.
+    // Can be changed dynamically by the AppDelegate.
+    static let defaultMenuWidth: CGFloat = 260
+    static let defaultMenuHeight: CGFloat = 220 // Adjust based on MainMenuView's content
+
+    init(initialSize: NSSize = NSSize(width: defaultMenuWidth, height: defaultMenuHeight)) {
         guard let screen = NSScreen.main else {
             super.init(contentRect: .zero, styleMask: [.borderless], backing: .buffered, defer: false)
             print("Error: Could not get main screen.")
@@ -12,14 +16,11 @@ class FloatingWindow: NSWindow {
         }
         let screenFrame = screen.frame
 
-        // Define the size of the floating window
-        let windowWidth: CGFloat = 250
-        let windowHeight: CGFloat = 80
+        let windowWidth = initialSize.width
+        let windowHeight = initialSize.height
         let windowSize = NSSize(width: windowWidth, height: windowHeight)
 
-        // Position it centered horizontally near the top (under the notch)
-        // Adjust `yOffset` to position it perfectly under your notch or menu bar.
-        let yOffset: CGFloat = 0 // Pixels from the top of the screen
+        let yOffset: CGFloat = 20 // Pixels from the top of the screen, slightly lower for a menu
         let windowOrigin = CGPoint(x: (screenFrame.width - windowSize.width) / 2,
                                    y: screenFrame.height - windowSize.height - yOffset)
 
@@ -30,23 +31,35 @@ class FloatingWindow: NSWindow {
 
         self.isOpaque = false                        // Allows transparency
         self.backgroundColor = .clear                // Make the window background transparent
-        self.hasShadow = true                        // Give it a system shadow (optional)
-        self.level = .floating                       // Keep it above most other windows
-        self.ignoresMouseEvents = true               // Make it click-through for now (can change)
-        self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary] // Behaves well with Spaces/Fullscreen
-        self.ignoresMouseEvents = false
+        self.hasShadow = true                        // Give it a system shadow
+        self.level = .statusBar                       // Keep it above most other windows
+        //self.level = .floating                       // Keep it above most other windows
+        //self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary] // Behaves well with Spaces/Fullscreen
+        self.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
+        self.ignoresMouseEvents = false              // Menu needs mouse events
 
-        // Optional: If you want to drag it by its background (if not ignoring mouse events)
         self.isMovableByWindowBackground = true
     }
 
-    // If you want the window to be able to receive keyboard/mouse events
-    // (and set ignoresMouseEvents = false above)
-    // override var canBecomeKey: Bool {
-    //     return true
-    // }
-    //
-    // override var canBecomeMain: Bool {
-    //     return true
-    // }
+    // Call this to re-center the window under the notch using its *current* size
+    // Useful after resizing the window.
+    func positionNearNotch(yOffset: CGFloat = 0) { // Default yOffset to 0 for the actual notch thingy
+        guard let screen = NSScreen.main else { return }
+        let screenFrame = screen.frame
+        let windowSize = self.frame.size // Current size of the window
+
+        let newOrigin = CGPoint(x: (screenFrame.width - windowSize.width) / 2,
+                                y: screenFrame.height - windowSize.height - yOffset)
+        self.setFrameOrigin(newOrigin)
+    }
+    
+    func setFrame(_ frameRect: NSRect, display flag: Bool, animate: Bool, andPositionNearNotchYOffset yOffset: CGFloat?) {
+        super.setFrame(frameRect, display: flag, animate: animate)
+        if let yOffset = yOffset {
+            self.positionNearNotch(yOffset: yOffset)
+        } else {
+            // If no yOffset, just center it (or use existing position if not changing size)
+            // self.center() // Could be an option too
+        }
+    }
 }

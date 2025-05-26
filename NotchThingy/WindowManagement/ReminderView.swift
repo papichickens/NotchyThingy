@@ -6,8 +6,9 @@ struct ListItem: Identifiable, Hashable {
     var text: String
 }
 
-struct NotchContentView: View {
+struct ReminderView: View {
     @State private var isHovering: Bool = false
+    //var onBack: () -> Void
 
     private let defaultOpacity: Double = 0.5
     private let hoverOpacity: Double = 1.0
@@ -46,6 +47,7 @@ struct NotchContentView: View {
        }
 
     var body: some View {
+        
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.black.opacity(isHovering || editingItemID != nil ? hoverOpacity : defaultOpacity))
@@ -139,10 +141,10 @@ struct NotchContentView: View {
         }
 }
 
-struct NotchContentView_Previews: PreviewProvider {
+struct ReminderView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            NotchContentView()
+            ReminderView()
                 .previewDisplayName("Default State")
         }
         .frame(width: 300, height: 150) // Adjusted preview frame to see both
