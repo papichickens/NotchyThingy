@@ -13,7 +13,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // Define target sizes for different views
     // Define target sizes for different views
-    private let initialHookSize = NSSize(width: InitialHookView.hookWidth, height: InitialHookView.hookHeight)
+    private let initialHookSize = NSSize(width: InitialHookView.expandedHookWidth, height: InitialHookView.expandedHookHeight)
     private let menuSize = NSSize(width: FloatingWindow.defaultMenuWidth, height: FloatingWindow.defaultMenuHeight)
     private let remindersSize = NSSize(width: 300, height: 120) // Adjusted for Reminders list
     private let mirrorSize = NSSize(width: 300, height: 120)    // Example for Mirror view
@@ -33,12 +33,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let window = floatingWindow else { return }
         
         let rootView = view
-            .frame(width: newSize.width, height: newSize.height)
 
         let hostingView = NSHostingView(rootView: rootView)
-        hostingView.frame.size = newSize
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        //hostingView.frame.size = newSize
       
-        window.contentView = hostingView
+        //window.contentView = hostingView
+        window.contentView = NSView()  // Create an empty container view first
+        window.contentView?.addSubview(hostingView)
+
+        // Setup Auto Layout for hostingView inside contentView
+        NSLayoutConstraint.activate([
+            hostingView.centerXAnchor.constraint(equalTo: window.contentView!.centerXAnchor),
+            hostingView.centerYAnchor.constraint(equalTo: window.contentView!.centerYAnchor),
+            hostingView.widthAnchor.constraint(equalToConstant: newSize.width),
+            hostingView.heightAnchor.constraint(equalToConstant: newSize.height)
+        ])
       
         let currentOrigin = window.frame.origin // Keep current origin X as a base for centering
         let newFrame = NSRect(origin: CGPoint(x: currentOrigin.x, y: window.frame.origin.y - (newSize.height - window.frame.height)),
@@ -52,7 +62,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.showMainMenuView()
         }
         // Initial hook is tight to the notch
-        setWindowContent(to: hookView, newSize: initialHookSize, yOffsetForPositioning: 0)
+        setWindowContent(to: hookView, newSize: initialHookSize, yOffsetForPositioning: -3)
     }
 
     private func showMainMenuView() {

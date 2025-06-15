@@ -39,6 +39,7 @@ class FloatingWindow: NSWindow {
         self.ignoresMouseEvents = false              // Menu needs mouse events
 
         self.isMovableByWindowBackground = true
+        //self.isMovableByWindowBackground = false
     }
 
     // Call this to re-center the window under the notch using its *current* size
